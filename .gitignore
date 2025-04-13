@@ -172,3 +172,30 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# --- IDE 및 프로젝트 환경 ---
+.vscode/
+.idea/
+*.iml
+
+# --- 도커 설정 및 볼륨 ---
+docker-compose.override.yaml
+pg_data/
+*.pid
+*.sock
+*.db
+tmp/
+*.tar
+
+# --- 환경 변수 및 보안 키 ---
+.env
+.env.*
+keys/id_rsa
+keys/id_rsa.pub
+*.pem
+*.crt
+*.key
+
+# --- 노트북 체크포인트 및 로그 ---
+.ipynb_checkpoints/
+*.log
