@@ -6,6 +6,8 @@ PID_FILE="$LOG_DIR/jupyter.pid"
 LOG_FILE="$LOG_DIR/jupyter.log"
 mkdir -p "$LOG_DIR"
 
+: ${JUPYTER_PORT:=8888}
+
 log() {
   local level="$1"; shift
   local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
@@ -19,8 +21,7 @@ case $1 in
     else
       log INFO "Starting Jupyter Notebook... Logging to: $LOG_FILE"
       nohup jupyter notebook --ip=0.0.0.0 --port=$JUPYTER_PORT \
-        --no-browser \
-        > "$LOG_FILE" 2>&1 &
+        --no-browser > "$LOG_FILE" 2>&1 &
       echo $! > "$PID_FILE"
       log INFO "Jupyter started with PID $(cat $PID_FILE)"
     fi
@@ -28,8 +29,12 @@ case $1 in
   stop)
     if [ -f "$PID_FILE" ]; then
       log INFO "Stopping Jupyter (PID: $(cat $PID_FILE))"
-      kill $(cat "$PID_FILE") && rm "$PID_FILE"
-      log INFO "Jupyter stopped."
+      if kill $(cat "$PID_FILE"); then
+        rm "$PID_FILE"
+        log INFO "Jupyter stopped."
+      else
+        log ERROR "Failed to stop Jupyter."
+      fi
     else
       log WARN "No Jupyter process found."
     fi

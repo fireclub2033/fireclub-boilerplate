@@ -1,0 +1,18 @@
+# 기본
+python-dotenv==1.0.1
+
+# 데이터 처리
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.12.0
+
+# 시각화
+matplotlib==3.8.4
+seaborn==0.13.2
+
+# 머신러닝
+scikit-learn==1.4.1.post1
+
+# 시스템 연동
+psycopg2-binary==2.9.9
+jupyter==1.0.0

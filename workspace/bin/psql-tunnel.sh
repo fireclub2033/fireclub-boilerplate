@@ -7,7 +7,7 @@ LOG_FILE="$LOG_DIR/psql-tunnel.log"
 mkdir -p "$LOG_DIR"
 
 # Load environment variables from .env
-ENV_PATH="$(dirname $0)/../../.env"
+ENV_PATH="$(cd "$(dirname "$0")/../.." && pwd)/.env"
 if [ -f "$ENV_PATH" ]; then
   export $(grep -v '^#' "$ENV_PATH" | xargs)
 fi

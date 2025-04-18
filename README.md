@@ -1,187 +1,155 @@
-# Fireclub 개발 템플릿
+## Fireclub 개발 템플릿
 
-Python 기반 라이브러리를 효율적으로 개발하고 협업하며, 빠르게 배포할 수 있도록 구성된 **컨테이너 기반 개발 환경 템플릿**입니다. Poetry, PostgreSQL, SSH, Jupyter, Docker를 통합하여 일관된 개발 환경을 제공 하고자 합니다.
-
----
-
-## 🧰 주요 구성 요소
-
-- **Poetry 기반 Python 패키지 관리**
-- **PostgreSQL/TimescaleDB 연동 세팅** 및 SSH 포트포워딩 지원
-- **Jupyter Notebook 제어 스크립트** 포함
-- **.env 기반 환경 자동 구성** 및 템플릿 자동 생성
-- **Docker 개발 컨테이너 자동 실행**
-- **라이브러리 빌드 및 배포 지원 (PyPI 또는 GitHub)**
+Python 기반 라이브러리 및 데이터 작업을 효율적으로 개발하고 빠른 배포가 가능하도록 구성된 콘터이너 기반 개발 환경 템플릿입니다. SSH, PostgreSQL, Jupyter, Docker, uv 기반 Python 환경 구성을 포함하여, 일관된 개발 및 협업 환경을 제공합니다.
 
 ---
 
-## 📁 프로젝트 구조
+## 주요 구성 요소
+
+- uv 기반 Python 패키지 설치 (`pip`사용가능)
+- PostgreSQL / TimescaleDB 연동 (SSH 포트포워딩 포함)
+- Jupyter Notebook 실행/중지 제어 스크립트
+- .env 기반 환경 구성 및 `docker-compose.yaml` 자동 생성
+- Docker 콘터이너 기반의 개발 환경 템플릿
+
+---
+
+## 프로젝트 구성
+init.py 실행 후 아래와 같이 프로젝트 세팅
 
 ```
 project-name/
-├── Dockerfile                         # Python + SSH + PostgreSQL client + Poetry
-├── docker-compose.yaml.template       # 템플릿 기반 docker-compose.yaml 생성용
-├── init.py                            # .env 읽고 docker-compose.yaml 자동 생성 및 실행
-├── .env.example                       # 환경 변수 예시 파일
-├── workspace/
-│   ├── pyproject.toml                 # Poetry 설정 파일
-│   ├── bin/
-│   │   ├── jupyter.sh                 # Jupyter 실행/중지 스크립트
-│   │   └── psql-tunnel.sh             # DB SSH 포트포워딩 스크립트
-│   ├── src/
-│   │   └── main.py                    # 예시: 환경 변수 출력 스크립트
-│   └── README.md
+├─ bin/
+│  ├─ jupyter.sh
+│  └─ psql-tunnel.sh
+├─ src/
+│  └─ main.py
+├─ Dockerfile
+├─ docker-compose.yaml.template
+├─ requirements.txt
+└─ README.md
 ```
 
 ---
 
-## ⚙️ 사용 방법
+## 설치 방법
 
-### 1. 환경 설정
+### 1. curl 설치 스크립트 실행
 
 ```bash
-cp .env.example .env  # .env 파일 생성 후 원하는 값으로 수정
+bash <(curl -sL https://raw.githubusercontent.com/fireclub2033/fireclub-boilerplate/main/install.sh) my-project
+cd my-project
 ```
 
-예시 `.env`:
+### 2. .env 설정
+
+```bash
+cp .env.example .env
+vi .env
+```
+
+평범 값 예시:
 
 ```dotenv
 PYTHON_VERSION=3.10
-RUN_MODE=dev
+RUN_MODE=dev # 실행 모드 전달용
 
-SSH_PORT=22
+SSH_PORT=2222
 REMOTE_USER=your_ssh_user
-REMOTE_HOST=your.host.com            # 접근 서버 주소
-
-DB_HOST=your.database.server.com     # 실제 PostgreSQL DB 서버 주소
-DB_PORT=5432
+REMOTE_HOST=your.ssh.gateway.com
 SSH_TUNNEL_PORT=15432
-DB_NAME=DB_dev
-DB_USER=irteam
-DB_PASSWORD=securepass
-```
 
-### 2. Docker 컨테이너 빌드 및 실행
+DB_HOST=your.database.internal      # SSH 터널링 대상 DB 주소
+DB_PORT=5432
+DB_NAME=your_db_name
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
 
-```bash
-python init.py
-```
-
-### 3. 컨테이너 내부 진입
-
-```bash
-docker exec -it project-name-dev bash
+# JUPYTER_PASSWORD_HASH=sha1:xxxxx    # 필요 시 해시로 설정
+JUPYTER_PORT=8888                   # 기본 포트 유지 가능
 ```
 
 ---
 
-## 🧪 로컬 개발 툴 사용
-
-### Jupyter Notebook 실행
+### 3. 개발 환경 세팅
 
 ```bash
-workspace/bin/jupyter.sh start
+python3 init.py              # 기본 실행
 ```
-
-### Jupyter Notebook 중지
-
 ```bash
-workspace/bin/jupyter.sh stop
+python3 init.py --keep-init  # 템플릿 파일 유지
 ```
 
 ---
 
-## 🔐 원격 PostgreSQL 접근 (SSH 포트포워딩)
-
-원격 서버의 PostgreSQL에 안전하게 접근하려면 아래 명령을 실행하세요:
+## 컨테이너 실행 및 지방
 
 ```bash
-workspace/bin/psql-tunnel.sh
+docker compose up --build -d
 ```
 
-이후 로컬에서 다음과 같이 접속 가능합니다:
-
 ```bash
-psql -h localhost -p 15432 -U irteam -d DB_dev
+docker exec -it <container-name> bash # docker 내부 shell 접속
 ```
 
 ---
 
-## 🛠 라이브러리 테스트 및 빌드
-
-### 테스트 실행
-
+## Jupyter Notebook 제어
+컨테이너 내부에서:
 ```bash
-poetry run pytest
-```
-
-### 패키지 빌드 & 버전 관리
-
-```bash
-poetry version patch   # 또는 minor / major
-poetry build
-```
-
-### PyPI 또는 GitHub 패키지 배포
-
-```bash
-poetry publish
-```
-
-최초 배포 시 토큰 설정 필요:
-
-```bash
-poetry config pypi-token.pypi <your-token>
+bin/jupyter.sh start
+bin/jupyter.sh stop
+bin/jupyter.sh log
 ```
 
 ---
 
-## 🚀 라이브러리 사용 예시 (다른 프로젝트에서)
-
+## PostgreSQL 포트포워딩 (SSH)
+컨테이너 내부에서:
 ```bash
-pip install git+https://github.com/your-org/project-name.git
+bin/psql-tunnel.sh start
+bin/psql-tunnel.sh stop
+bin/psql-tunnel.sh log
+
+# 이후 접속
+psql -h localhost -p 15432 -U $DB_USER -d $DB_NAME
 ```
 
-또는 PyPI, GitHub Package Registry 등 사설 저장소에도 배포 가능합니다.
+---
+
+## Python 패키지 설치 / 실행
+
+컨테이너 내부에서:
+
+```bash
+uv pip install -r requirements.txt
+python src/main.py
+```
 
 ---
 
-## 🌐 컨테이너 내부에서 자동으로 설정되는 환경 변수
+## 환경 변수 (컨테이너 내부)
 
-컨테이너 내부에서는 다음 환경 변수들이 자동으로 설정되어 있습니다:
+| 변수명       | 설명                         |
+|------------------|----------------------------------|
+| RUN_MODE         | 실행 목록 (dev, prod 등)   |
+| PROJECT_NAME     | 프로젝트 이름              |
+| DB_HOST          | DB 주소                    |
+| DB_PORT          | DB 포트                    |
+| DB_NAME          | DB 이름                    |
+| DB_USER          | DB 사용자                  |
+| DB_PASSWORD      | DB 비밀번호                |
+| REMOTE_HOST      | SSH 대상 호스트            |
+| JUPYTER_PORT     | Jupyter 로케열 포트         |
 
-| 변수명         | 설명                         |
-|----------------|------------------------------|
-| `RUN_MODE`     | dev, prod 등 실행 모드       |
-| `PROJECT_NAME` | 현재 프로젝트 폴더명 기반 이름 |
-| `DB_HOST`      | DB 서버 주소                 |
-| `DB_PORT`      | DB 포트 번호                 |
-| `DB_NAME`      | 사용할 DB 이름               |
-| `DB_USER`      | DB 접속 계정                 |
-| `DB_PASSWORD`  | DB 접속 비밀번호             |
-| `REMOTE_HOST`  | SSH 포트포워딩 대상 서버 주소 |
-
-Python 코드 내부에서 `os.getenv("DB_HOST")` 등으로 읽을 수 있습니다.
-
----
-
-## 🤝 협업 워크플로우 권장 사항
-
-- `.env.example`은 모든 프로젝트에 포함하여 기본 설정 공유
-- `.env` 파일은 `.gitignore`에 포함하여 커밋 금지
-- `poetry.lock`으로 버전 고정하여 재현성 확보
-- 컨테이너 내부에서 개발/테스트 후 릴리즈
-- `key`, `password`, `id` 등 업로드 주의
+Python 코드에서 `os.getenv("DB_HOST")` 방식으로 접근 가능
 
 ---
 
-## 📎 확장 팁
-- MLFlow, Airflow, Redis 등의 서비스도 `docker-compose`에 추가 가능합니다
-- GitHub Actions와 연동하여 CI 테스트/배포 자동화도 고려할 수 있습니다
+## 협업 최적 가정
 
----
-
-## 📮 기여
-
-이 템플릿은 자유롭게 수정 및 확장 가능합니다.\
-개선사항은 PR로 환영합니다! 🛠️
+- `.env`는 `.gitignore`에 포함해서 커미팅 금지
+- `.env.example`은 공유의 기반으로 바로 포함
+- `requirements.txt`로 의존성 고정 구현
+- 개발/테스트는 모두 컨테이너 내부에서 수행
+- 암호 등 무기적 정보는 추출적으로 포함 금지
