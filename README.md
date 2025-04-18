@@ -1,6 +1,6 @@
 ## Fireclub 개발 템플릿
 
-Python 기반 라이브러리 및 데이터 작업을 효율적으로 개발하고 빠른 배포가 가능하도록 구성된 콘터이너 기반 개발 환경 템플릿입니다. SSH, PostgreSQL, Jupyter, Docker, uv 기반 Python 환경 구성을 포함하여, 일관된 개발 및 협업 환경을 제공합니다.
+Python 기반 개발에 필요한 환경을 Docker 기반으로 간편하게 구성할 수 있는 템플릿입니다. SSH, PostgreSQL, Jupyter, uv 등을 포함하여 일관된 개발 환경을 제공합니다.
 
 ---
 
@@ -10,7 +10,7 @@ Python 기반 라이브러리 및 데이터 작업을 효율적으로 개발하�
 - PostgreSQL / TimescaleDB 연동 (SSH 포트포워딩 포함)
 - Jupyter Notebook 실행/중지 제어 스크립트
 - .env 기반 환경 구성 및 `docker-compose.yaml` 자동 생성
-- Docker 콘터이너 기반의 개발 환경 템플릿
+- Docker 콘테이너 기반의 개발 환경 템플릿
 
 ---
 
