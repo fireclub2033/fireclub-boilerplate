@@ -7,14 +7,14 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        PYTHON_VERSION: $python_version
-        CONTAINER_USER: $container_user
-        CONTAINER_PASS: $container_pass
+        PYTHON_VERSION: $${PYTHON_VERSION}
+        CONTAINER_USER: $${CONTAINER_USER}
+        CONTAINER_PASS: $${CONTAINER_PASS}
     container_name: $container_name
     hostname: $container_name
     ports:
-      - "$ssh_port:22"
-      - "${JUPYTER_PORT:-8888}:8888"  # Jupyter 포트 매핑 (선택)
+      - "$${SSH_PORT}:22"
+      - "$${JUPYTER_PORT}:8888"  # Jupyter 포트 매핑 (선택)
 
     volumes:
       - ./src:/home/$container_user/workspace
@@ -22,21 +22,20 @@ services:
 
     environment:
       # 런타임 모드
-      - RUN_MODE=${RUN_MODE:-dev}
-      - PROJECT_NAME=${PROJECT_NAME:-fireclub}
+      - RUN_MODE=$${RUN_MODE}
+      - PROJECT_NAME=$project_name
 
       # DB 연결 정보
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=$${DB_HOST}
+      - DB_PORT=$${DB_PORT}
+      - DB_NAME=$${DB_NAME}
+      - DB_USER=$${DB_USER}
+      - DB_PASSWORD=$${DB_PASSWORD}
 
       # SSH 포트포워딩 대상
-      - REMOTE_USER=${REMOTE_USER}
-      - REMOTE_HOST=${REMOTE_HOST}
-      - SSH_TUNNEL_PORT=${SSH_TUNNEL_PORT}
+      - REMOTE_USER=$${REMOTE_USER}
+      - REMOTE_HOST=$${REMOTE_HOST}
+      - SSH_TUNNEL_PORT=$${SSH_TUNNEL_PORT}
 
       # Jupyter 설정 (선택)
-      - JUPYTER_PORT=${JUPYTER_PORT:-8888}
-      # - JUPYTER_PASSWORD_HASH=${JUPYTER_PASSWORD_HASH}
+      - JUPYTER_PORT=$${JUPYTER_PORT}

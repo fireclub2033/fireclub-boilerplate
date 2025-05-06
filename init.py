@@ -47,11 +47,8 @@ def render_compose(env, project_name, run_mode):
     content = template.substitute({
         "container_name": container_name,
         "container_user": env.get("CONTAINER_USER", "devuser"),
-        "container_pass": env.get("CONTAINER_PASS", "devpass"),
-        "python_version": env.get("PYTHON_VERSION", "3.10"),
-        "ssh_port": env.get("SSH_PORT", "2222"),
         "image": image_name,
-        "run_mode": run_mode,
+        "project_name": project_name,
     })
 
     with COMPOSE_OUTPUT.open("w") as f:
@@ -60,7 +57,7 @@ def render_compose(env, project_name, run_mode):
     log(f"docker-compose.yaml 생성 완료 (container: {container_name}, image: {image_name})")
 
 def copy_workspace_contents():
-    targets = ["Dockerfile", "pyproject.toml", "bin", "src"]
+    targets = ["Dockerfile", "pyproject.toml", "bin", "src", "requirements.txt"]
     for name in targets:
         src = WORKSPACE_DIR / name
         dst = ROOT_DIR / name
