@@ -67,6 +67,12 @@ def copy_workspace_contents():
             shutil.copy2(src, dst)
     log("workspace 내 파일 복사 완료")
 
+def remove_git_folder():
+    git_dir = ROOT_DIR / ".git"
+    if git_dir.exists() and git_dir.is_dir():
+        shutil.rmtree(git_dir)
+        log(".git 디렉토리 삭제 완료")
+
 def cleanup(keep=False):
     if not keep:
         shutil.rmtree(WORKSPACE_DIR, ignore_errors=True)
@@ -86,6 +92,7 @@ def main():
 
     copy_workspace_contents()
     render_compose(env, project_name, run_mode)
+    remove_git_folder()
     cleanup(keep=keep_files)
 
     log("개발 환경 초기화 완료. docker-compose up 으로 컨테이너를 시작하세요.")

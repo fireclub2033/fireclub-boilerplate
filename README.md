@@ -80,6 +80,16 @@ python3 init.py              # 기본 실행
 python3 init.py --keep-init  # 템플릿 파일 유지
 ```
 
+### 4. git init
+```bash
+git init
+git add .
+git commit -m "init: 프로젝트 템플릿 적용"
+git remote add origin https://github.com/your-username/my-new-project.git
+git branch -M main
+git push -u origin main
+```
+
 ---
 
 ## 컨테이너 실행 및 지방
