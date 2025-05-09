@@ -42,6 +42,8 @@ WORKDIR /home/${CONTAINER_USER}/workspace
 COPY src/ ./src/
 COPY bin/ ./bin/
 COPY requirements.txt ./
+COPY pyproject.toml ./
+COPY uv.lock ./
 
 RUN chown -R ${CONTAINER_USER}:${CONTAINER_USER} /home/${CONTAINER_USER}/workspace
 
@@ -49,7 +51,8 @@ RUN chown -R ${CONTAINER_USER}:${CONTAINER_USER} /home/${CONTAINER_USER}/workspa
 USER ${CONTAINER_USER}
 
 # 의존성 설치 (requirements.txt가 없는 경우 무시)
-RUN test -f requirements.txt && uv pip install -r requirements.txt || true
+RUN test -f requirements.txt && uv pip install -r requirements.txt
+RUN uv pip install
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]

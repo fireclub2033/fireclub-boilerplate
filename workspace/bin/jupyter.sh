@@ -1,5 +1,5 @@
 #!/bin/bash
-# workspace/bin/jupyter.sh
+# bin/jupyter.sh
 
 LOG_DIR="$HOME/.fireclub/logs"
 PID_FILE="$LOG_DIR/jupyter.pid"
@@ -39,11 +39,14 @@ case $1 in
       log WARN "No Jupyter process found."
     fi
     ;;
+  foreground)
+    exec jupyter notebook --notebook-dir="$HOME" --ip=0.0.0.0 --port=$JUPYTER_PORT --no-browser
+    ;;
   log)
     log INFO "Tailing Jupyter log at $LOG_FILE"
     tail -f "$LOG_FILE"
     ;;
   *)
-    echo "Usage: jupyter.sh {start|stop|log}"
+    echo "Usage: jupyter.sh {start|stop|foreground|log}"
     ;;
 esac

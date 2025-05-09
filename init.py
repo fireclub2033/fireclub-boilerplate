@@ -3,6 +3,7 @@ import sys
 import shutil
 from pathlib import Path
 from string import Template
+import subprocess
 
 ROOT_DIR = Path.cwd()
 WORKSPACE_DIR = ROOT_DIR / "workspace"
@@ -57,7 +58,7 @@ def render_compose(env, project_name, run_mode):
     log(f"docker-compose.yaml 생성 완료 (container: {container_name}, image: {image_name})")
 
 def copy_workspace_contents():
-    targets = ["Dockerfile", "pyproject.toml", "bin", "src", "requirements.txt"]
+    targets = ["Dockerfile", "pyproject.toml", "bin", "src", "requirements.txt", ".gitignore"]
     for name in targets:
         src = WORKSPACE_DIR / name
         dst = ROOT_DIR / name
@@ -82,6 +83,16 @@ def cleanup(keep=False):
     else:
         log("--keep-init 사용됨: 파일 유지")
 
+def uv_init():
+    if not (ROOT_DIR / "pyproject.toml").exists():
+        subprocess.run(["uv", "init", "--yes"], check=True)
+        log("uv init으로 pyproject.toml 생성 완료")
+        req = ROOT_DIR / "requirements.txt"
+        if req.exists():
+            subprocess.run(["uv", "add", "-r", "requirements.txt"], check=True)
+            log("requirements.txt의 패키지를 pyproject.toml에 추가 완료")
+    subprocess.run(["uv", "venv"], check=True)
+
 def main():
     keep_files = "--keep-init" in sys.argv
 
@@ -94,6 +105,7 @@ def main():
     render_compose(env, project_name, run_mode)
     remove_git_folder()
     cleanup(keep=keep_files)
+    uv_init()
 
     log("개발 환경 초기화 완료. docker-compose up 으로 컨테이너를 시작하세요.")
 

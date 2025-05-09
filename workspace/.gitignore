@@ -199,3 +199,9 @@ keys/id_rsa.pub
 # --- 노트북 체크포인트 및 로그 ---
 .ipynb_checkpoints/
 *.log
+.fireclub/
+.fireclub/logs/
+.fireclub/logs/jupyter.log
+.fireclub/logs/jupyter.pid
+.fireclub/logs/psql-tunnel.log
+.fireclub/logs/psql-tunnel.pid
